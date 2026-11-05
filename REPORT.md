@@ -160,6 +160,19 @@ SIM_STATE_CHANGED ──► SIMStateReceiver ──(180 s)──► ICCID compar
 explicit intent to OnBootReceiver / SIMStateReceiver ──► RegType B / T, no schedule constraint
 ```
 
+
+Per-dataset cadence:
+
+| Dataset | Sampling | Sampling trigger | Upload |
+|---|---|---|---|
+| device + subscriber identity (IMEI, IMSI, ICCID, model, OS) | rebuilt at send time | every report | carried in **every** `RegType` |
+| cell / RF (TAC, CID, PCI, RSRP/RSRQ/SINR) | hourly | `GetSignalInfoReceiver` alarm (`d.v = 1 h`) | batched every 12 h as `RegType=R` |
+| location (BD09LL) | hourly, same receiver | Baidu LBS callback | batched every 12 h as `RegType=R` |
+| installed apps, foreground time, per-app traffic | every 24 h | `AppInfoRegisterReceiver` alarm (`d.t = 24 h`) | `RegType=A` |
+| SIM / ICCID change | on `SIM_STATE_CHANGED` | platform broadcast | `RegType=T`, 180 s after the change, only if ICCID differs |
+| full device report | at boot | `BOOT_COMPLETED` + 240 s | `RegType=B` (`F` on first boot) |
+| failed uploads | — | send failure | queue `dmregister`, drained oldest-first on the next cycle (max 10) |
+
 Interval defaults are hard-coded in `c/d/a/b/d.java:27-36` and can be overwritten at runtime through the exported service. Sampling of RF/location runs hourly; batched upload runs twice a day.
 
 `RegType` semantics (from `c/d/a/a/n.java:118-170`):

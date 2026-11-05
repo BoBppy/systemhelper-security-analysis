@@ -161,6 +161,19 @@ SIM_STATE_CHANGED ──► SIMStateReceiver ──(180 秒)──► 比对 ICC
 显式 Intent 指向 OnBootReceiver / SIMStateReceiver ──► RegType B / T，不受周期约束
 ```
 
+
+按数据集的节奏：
+
+| 数据集 | 采样频率 | 采样触发 | 上报 |
+|---|---|---|---|
+| 设备与用户标识（IMEI、IMSI、ICCID、型号、系统版本） | 发送时重建 | 每次上报 | **每种** `RegType` 都携带 |
+| 小区/RF（TAC、CID、PCI、RSRP/RSRQ/SINR） | 每小时 | `GetSignalInfoReceiver` 闹钟（`d.v = 1 小时`） | 每 12 小时批量，`RegType=R` |
+| 位置（BD09LL） | 每小时，同一接收器 | 百度 LBS 回调 | 每 12 小时批量，`RegType=R` |
+| 已安装应用、前台时长、单应用流量 | 每 24 小时 | `AppInfoRegisterReceiver` 闹钟（`d.t = 24 小时`） | `RegType=A` |
+| SIM / ICCID 变化 | `SIM_STATE_CHANGED` 时 | 系统广播 | 变化后 180 秒，`RegType=T`，仅 ICCID 不同才发 |
+| 完整设备报文 | 开机时 | `BOOT_COMPLETED` + 240 秒 | `RegType=B`（首次开机为 `F`） |
+| 失败上报 | — | 发送失败 | 入队 `dmregister`，下一周期按最旧优先重试（上限 10 条） |
+
 默认周期硬编码于 `c/d/a/b/d.java:27-36`，并可在运行时经导出服务改写。RF/位置采样每小时一次；批量上报每日两次。
 
 `RegType` 语义（`c/d/a/a/n.java:118-170`）：
