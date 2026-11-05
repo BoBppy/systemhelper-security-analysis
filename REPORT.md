@@ -61,7 +61,7 @@ Reproduction steps are in `docs/METHOD.md`; the file:line references below point
 | SHA-1 | `7B:6D:C7:07:9C:34:73:9C:E8:11:59:71:9F:B5:EB:61:D2:A0:32:25` |
 | SHA-256 | `C9:00:9D:01:EB:F9:F5:D0:30:2B:C7:1B:2F:E9:AA:9A:47:A4:32:BB:A1:73:08:A3:11:1B:75:D7:B2:14:90:25` |
 
-This is the MIUI platform certificate also used for Xiaomi system applications (e.g. Mi Share, CIT). Two consequences:
+This is the MIUI platform certificate also used for Xiaomi system applications. The SHA-1 was corroborated against public APK signature listings for Mi Share and CIT, which report the same digest. Two consequences:
 
 - On a MIUI-derived ROM the APK passes platform signature checks, so signature-level permissions and the `sharedUserId` are effective. The app therefore operates with privileges far above a normal third-party application.
 - The same package name (`com.mobiletools.systemhelper`) contains adapters for Xiaomi, OPPO, vivo, Samsung, realme, ZTE, nubia, OnePlus, WIKO, PTAC, TDTECH and "Liantong". A single signing key cannot be the platform key of all those vendors, so this specific artefact is **one vendor's build of a multi-OEM codebase**. The trust anchor is therefore vendor-specific and cannot be generalised.
