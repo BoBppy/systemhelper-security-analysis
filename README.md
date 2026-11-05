@@ -21,7 +21,7 @@ Reverse-engineering report for the Android package `com.mobiletools.systemhelper
 | F-05 | Medium | MD5-as-KDF + AES-128-ECB + RSA-1024 + no nonce; deterministic ciphertext and deterministic `sign`. |
 | F-06 | Medium | IMEI, IMSI, ICCID and coordinates written to logcat when a flag is set — and the flag is settable over IPC. |
 | F-07 | Medium | Exported diagnostic activity renders the full device-identity JSON. |
-| F-08 | Medium | Bundled Baidu LBS 9.5.2.1 with background location and a hard-coded API key; independent third-party data flow. |
+| F-08 | Medium | Bundled Baidu LBS (9.5.2.x) with background location and a hard-coded API key; independent third-party data flow. |
 | F-09 | Medium | System signature + `sharedUserId` + privileged phone state + usage stats, with no launcher icon and no user-visible surface. |
 | F-10 | Low | HTTP 416 treated as delivery success. |
 | F-11 | Info | Cross-OEM code reuse; residual Gree AIDL descriptor. |

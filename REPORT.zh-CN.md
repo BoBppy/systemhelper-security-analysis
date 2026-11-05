@@ -382,7 +382,7 @@ MD5 作 KDF、AES-128-ECB、RSA-1024 PKCS#1 v1.5、无 nonce/IV、输出确定�
 
 ### F-08 — 内置第三方定位 SDK 与硬编码 API Key · **中**
 
-百度 LBS 9.5.2.1（`liblocSDK8b.so`、`libindoor.so`、18 个 Java 壳类）以独立 `:remote` 进程运行，具备后台定位，访问 `*.map.baidu.com`。LBS Key `IGY6EFGRsixbYqk7GeZdAOD2Od3Rj7iF` 硬编码于清单。该 SDK 自身的数据流不在运营商隐私告知范围内，也不在本次审计范围内（原生代码已加固）。
+百度 LBS（版本 9.5.2.x，依据 SDK 任务标签 `com.baidu.location.autonotifyloc_9.5.2.1` 推断；`liblocSDK8b.so`、`libindoor.so`、18 个 Java 壳类）以独立 `:remote` 进程运行，具备后台定位，访问 `*.map.baidu.com`。LBS Key `IGY6EFGRsixbYqk7GeZdAOD2Od3Rj7iF` 硬编码于清单。该 SDK 自身的数据流不在运营商隐私告知范围内，也不在本次审计范围内（原生代码已加固）。
 **CWE-798 / CWE-359**
 **修复** 与 SDK 厂商签署数据处理协议；按包名/签名限制 Key；在隐私告知中披露该第三方数据流；评估不依赖第三方的端侧定位方案。
 

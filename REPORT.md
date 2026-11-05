@@ -381,7 +381,7 @@ MD5 used as KDF, AES-128 in ECB mode, RSA-1024 PKCS#1 v1.5, no nonce/IV, determi
 
 ### F-08 — Bundled third-party location SDK with hard-coded API key · **Medium**
 
-Baidu LBS 9.5.2.1 (`liblocSDK8b.so`, `libindoor.so`, 18 Java shims) runs in a separate `:remote` process with background location and contacts `*.map.baidu.com`. The LBS key `IGY6EFGRsixbYqk7GeZdAOD2Od3Rj7iF` is hard-coded in the manifest. The SDK's own data flows are outside the operator's privacy notice and outside this audit (native code is packed).
+Baidu LBS — version 9.5.2.x, inferred from the SDK task tag `com.baidu.location.autonotifyloc_9.5.2.1` — (`liblocSDK8b.so`, `libindoor.so`, 18 Java shims) runs in a separate `:remote` process with background location and contacts `*.map.baidu.com`. The LBS key `IGY6EFGRsixbYqk7GeZdAOD2Od3Rj7iF` is hard-coded in the manifest. The SDK's own data flows are outside the operator's privacy notice and outside this audit (native code is packed).
 **CWE-798** Use of Hard-coded Credentials · **CWE-359**
 **Fix** confirm a data-processing agreement with the SDK vendor, restrict the key by package/signature, document the third-party flow, and evaluate an on-device geolocation path that does not require a third party.
 
