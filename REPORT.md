@@ -30,6 +30,7 @@ Seven judgements drive the risk assessment:
 | Item | Value |
 |---|---|
 | Target | `SystemHelper_3.0.1-20250311.apk` (3,261,815 bytes) |
+| Provenance | APK image extracted from a Xiaomi (MIUI) handset, as supplied; corroborated by the MIUI platform signer, Xiaomi-specific code paths and the absence of a launcher entry |
 | Decompiler | jadx 1.5.6 (bundled JRE 25) |
 | Classes recovered | 585 Java files; 20 application classes (`com.mobiletools.*`) + 28 support classes in the obfuscated `c.d.a` package |
 | Native code | `liblocSDK8b.so` (368,568 B), `libindoor.so` (1,596,896 B) — both Baidu LBS, stripped/packed |
@@ -81,7 +82,7 @@ Full table: `evidence/components.csv`.
 | `service.RegisterIntentService`, `RegisterJobService` | service | no | — / `BIND_JOB_SERVICE` | internal |
 | `com.baidu.location.f` | service | no | none | bundled SDK, `:remote` process |
 
-### 2.4 Permissions (16)
+### 2.4 Permissions (17)
 
 ```
 ACCESS_BACKGROUND_LOCATION   ACCESS_COARSE_LOCATION   ACCESS_FINE_LOCATION
