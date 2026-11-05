@@ -2,9 +2,9 @@
   "schema": "android-app-profile/1",
   "generated": "2026-11-05",
   "provenance": {
-    "source": "APK image extracted from a Xiaomi (MIUI) handset, supplied by the requester",
+    "source": "APK image extracted from a Xiaomi 17 running HyperOS, supplied by the requester",
     "corroboration": [
-      "signing certificate is the Xiaomi MIUI platform certificate",
+      "signing certificate is Xiaomi's platform certificate (subject still carries the legacy MIUI identity)",
       "reflective calls to miui.telephony.TelephonyManager.getImeiForSlot",
       "reads Settings.Global.miui_version_name",
       "vendor dispatcher keyed on ro.product.manufacturer",

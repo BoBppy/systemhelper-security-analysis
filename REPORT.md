@@ -30,7 +30,7 @@ Seven judgements drive the risk assessment:
 | Item | Value |
 |---|---|
 | Target | `SystemHelper_3.0.1-20250311.apk` (3,261,815 bytes) |
-| Provenance | APK image extracted from a Xiaomi (MIUI) handset, as supplied; corroborated by the MIUI platform signer, Xiaomi-specific code paths and the absence of a launcher entry |
+| Provenance | APK image extracted from a Xiaomi 17 running HyperOS, as supplied; corroborated by the MIUI platform signer, Xiaomi-specific code paths and the absence of a launcher entry |
 | Decompiler | jadx 1.5.6 (bundled JRE 25) |
 | Classes recovered | 585 Java files; 20 application classes (`com.mobiletools.*`) + 28 support classes in the obfuscated `c.d.a` package |
 | Native code | `liblocSDK8b.so` (368,568 B), `libindoor.so` (1,596,896 B) — both Baidu LBS, stripped/packed |
@@ -64,7 +64,7 @@ Reproduction steps are in `docs/METHOD.md`; the file:line references below point
 
 This is the MIUI platform certificate also used for Xiaomi system applications. The SHA-1 was corroborated against public APK signature listings for Mi Share and CIT, which report the same digest. Two consequences:
 
-- On a MIUI-derived ROM the APK passes platform signature checks, so signature-level permissions and the `sharedUserId` are effective. The app therefore operates with privileges far above a normal third-party application.
+- On a HyperOS/MIUI-derived ROM the APK passes platform signature checks, so signature-level permissions and the `sharedUserId` are effective. The app therefore operates with privileges far above a normal third-party application.
 - The same package name (`com.mobiletools.systemhelper`) contains adapters for Xiaomi, OPPO, vivo, Samsung, realme, ZTE, nubia, OnePlus, WIKO, PTAC, TDTECH and "Liantong". A single signing key cannot be the platform key of all those vendors, so this specific artefact is **one vendor's build of a multi-OEM codebase**. The trust anchor is therefore vendor-specific and cannot be generalised.
 
 ### 2.3 Components

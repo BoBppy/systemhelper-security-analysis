@@ -6,9 +6,11 @@ This repository contains the full report, the decompiled evidence, the reconstru
 
 ## Provenance
 
-- **Source**: the APK was supplied as an image extracted from a Xiaomi (MIUI) handset.
+- **Source**: the APK was supplied as an image extracted from a Xiaomi 17 running HyperOS.
 - **Corroboration**: the signing certificate is Xiaomi's MIUI platform certificate (see [Signing](#signing)), and the code contains Xiaomi-specific branches — reflective calls to `miui.telephony.TelephonyManager.getImeiForSlot`, `Settings.Global.miui_version_name`, and a vendor dispatcher keyed on `ro.product.manufacturer`. There is no `LAUNCHER` entry, which places it in the pre-installed system image rather than in user space.
 - **What it is**: a China Unicom "terminal information reporting" client implementing the DM 5.0 specification (`SpecVersion=5.0`, `DeviceType=000005`), shipped as a privileged system app so that it can read identifiers and usage statistics that ordinary applications cannot.
+
+A companion analysis of the OEM's own security package (`com.miui.guardprovider`, signed with the same certificate) is in `../guardprovider-security-analysis`.
 
 The research value is a documented case of **carrier-side telemetry inside an OEM ROM supply chain**: who installs it, what it can reach with system privileges, how the data is protected in transit, and where the design breaks. It is relevant to mobile privacy auditing, pre-installation review and DM/MDM protocol analysis.
 
