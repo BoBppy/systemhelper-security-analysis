@@ -7,7 +7,7 @@ This repository contains the full report, the decompiled evidence, the reconstru
 ## Provenance
 
 - **Source**: the APK was supplied as an image extracted from a Xiaomi (MIUI) handset.
-- **Corroboration**: the signing certificate is Xiaomi's MIUI platform certificate (§ [Signing](#signing)), and the code contains Xiaomi-specific branches — reflective calls to `miui.telephony.TelephonyManager.getImeiForSlot`, `Settings.Global.miui_version_name`, and a vendor dispatcher keyed on `ro.product.manufacturer`. There is no `LAUNCHER` entry, which places it in the pre-installed system image rather than in user space.
+- **Corroboration**: the signing certificate is Xiaomi's MIUI platform certificate (see [Signing](#signing)), and the code contains Xiaomi-specific branches — reflective calls to `miui.telephony.TelephonyManager.getImeiForSlot`, `Settings.Global.miui_version_name`, and a vendor dispatcher keyed on `ro.product.manufacturer`. There is no `LAUNCHER` entry, which places it in the pre-installed system image rather than in user space.
 - **What it is**: a China Unicom "terminal information reporting" client implementing the DM 5.0 specification (`SpecVersion=5.0`, `DeviceType=000005`), shipped as a privileged system app so that it can read identifiers and usage statistics that ordinary applications cannot.
 
 The research value is a documented case of **carrier-side telemetry inside an OEM ROM supply chain**: who installs it, what it can reach with system privileges, how the data is protected in transit, and where the design breaks. It is relevant to mobile privacy auditing, pre-installation review and DM/MDM protocol analysis.
@@ -55,7 +55,7 @@ The research value is a documented case of **carrier-side telemetry inside an OE
 | SHA-1 | `7B:6D:C7:07:9C:34:73:9C:E8:11:59:71:9F:B5:EB:61:D2:A0:32:25` |
 | SHA-256 | `C9:00:9D:01:EB:F9:F5:D0:30:2B:C7:1B:2F:E9:AA:9A:47:A4:32:BB:A1:73:08:A3:11:1B:75:D7:B2:14:90:25` |
 
-The digest matches public signature records for Xiaomi system applications (Mi Share, CIT), which confirms the certificate rather than the provenance of any particular build.
+The digest matches public signature records for Xiaomi system applications (Mi Share, CIT). That confirms the build was signed with the MIUI platform key; it does not by itself establish the distribution channel of this particular image.
 
 ## Bundled SDKs and dependencies
 
