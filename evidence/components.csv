@@ -1,0 +1,13 @@
+component,type,exported,permission,intent_filter,risk
+com.mobiletools.systemhelper.Activity.TestActivity,activity,true,none,com.mobiletools.systemhelper.activity.testactivity,renders full device-info JSON (IMEI/IMSI/ICCID/cell/location) on screen
+com.mobiletools.systemhelper.control.OnBootReceiver,receiver,true,none,BOOT_COMPLETED; QUICKBOOT_POWERON,any explicit intent with a non-boot action falls through to a full registration cycle
+com.mobiletools.systemhelper.control.SIMStateReceiver,receiver,true,none,SIM_STATE_CHANGED,explicit intent with other action triggers a registration attempt
+com.mobiletools.systemhelper.control.ConnectStateReceiver,receiver,true,none,CONNECTIVITY_CHANGE,low (protected broadcast)
+com.mobiletools.systemhelper.service.RegisterHelperService,service,true,none,com.mobiletools.systemhelper.service.IRegisterHelperService,unauthenticated AIDL: set serverAddress / intervals / log flag / wipe prefs
+com.mobiletools.systemhelper.control.ScheduleRegisterReceiver,receiver,false,none,,internal alarm target
+com.mobiletools.systemhelper.control.AppInfoRegisterReceiver,receiver,false,none,,internal alarm target
+com.mobiletools.systemhelper.control.SignalInfoRegisterReceiver,receiver,false,none,,internal alarm target
+com.mobiletools.systemhelper.control.GetSignalInfoReceiver,receiver,false,none,,internal alarm target (Baidu location)
+com.mobiletools.systemhelper.service.RegisterIntentService,service,false,none,,internal
+com.mobiletools.systemhelper.service.RegisterJobService,service,false,BIND_JOB_SERVICE,,internal
+com.baidu.location.f,service,false,none,,bundled SDK; runs in :remote process

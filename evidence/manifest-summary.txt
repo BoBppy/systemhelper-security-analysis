@@ -1,0 +1,27 @@
+package: com.mobiletools.systemhelper
+appname: SystemHelper
+version: 3.0.1-20250311 / code 31
+minSdk: 31 targetSdk: 33
+main: None
+--- permissions ---
+android.permission.ACCESS_BACKGROUND_LOCATION
+android.permission.ACCESS_COARSE_LOCATION
+android.permission.ACCESS_FINE_LOCATION
+android.permission.ACCESS_LOCATION_EXTRA_COMMANDS
+android.permission.ACCESS_NETWORK_STATE
+android.permission.ACCESS_WIFI_STATE
+android.permission.CHANGE_WIFI_STATE
+android.permission.FOREGROUND_SERVICE
+android.permission.INTERNET
+android.permission.PACKAGE_USAGE_STATS
+android.permission.QUERY_ALL_PACKAGES
+android.permission.READ_EXTERNAL_STORAGE
+android.permission.READ_PHONE_STATE
+android.permission.READ_PRECISE_PHONE_STATE
+android.permission.READ_PRIVILEGED_PHONE_STATE
+android.permission.RECEIVE_BOOT_COMPLETED
+android.permission.SCHEDULE_EXACT_ALARM
+--- declared ---
+com.mobiletools.systemhelper.permission
+--- sharedUserId ---
+None

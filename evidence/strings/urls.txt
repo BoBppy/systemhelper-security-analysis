@@ -1,0 +1,23 @@
+ https://loc.map.baidu.com/cc.php
+!https://loc.map.baidu.com/sdk.php
+!https://ofloc.map.baidu.com/locnu
+"http://dm.wo.com.cn:18080/register
+$https://daup.map.baidu.com/cltr/rcvr
+$https://loc.map.baidu.com/sdk_ep.php
+&http://ofloc.map.baidu.com/offline_loc
+&https://api.map.baidu.com/sdkcs/verify
+'https://ofloc.map.baidu.com/offline_loc
+*http://schemas.android.com/apk/res/android
+*url:https://api.map.baidu.com/sdkcs/verify
++https://loc.map.baidu.com/cfgs/loc/commcfgs
+2https://loc.map.baidu.com/check_indoor_data_update
+3https://itsdata.map.baidu.com/long-conn-gps/sdk.php
+3https://loc.map.baidu.com/indoorlocbuildinginfo.php
+6https://loc.map.baidu.com/cfgs/indoorloc/indoorroadnet
+=https://ofloc.map.baidu.com/LocBrokerService/do_loc_map_match
+Chttps://ofloc.map.baidu.com/PlanarStartService/detect_parking_exits
+Lhttps://parking.baidu.com/parking/api/parkingdata/getcarportlistforlocation?
+http://
+http://%s/%s
+https://
+https://loc.map.baidu.com/gpsz

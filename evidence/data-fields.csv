@@ -1,0 +1,32 @@
+﻿dataset,field,source_api,transform_before_upload,notes
+device,Manuf,ro.product.manufacturer via reflection,none,also sent in URL query in clear text
+device,Model,Build.MODEL,none,also sent in URL query in clear text
+device,HWVersion,ro.hardware.version / OEM props,none,
+device,SWVersion,Build.DISPLAY or miui_version_name,none,
+device,OS / OSVersion,constants + Build.VERSION.RELEASE,none,
+device,IMEI1 / IMEI2,TelephonyManager.getImei(0/1) or miui.telephony.TelephonyManager.getImeiForSlot,none (full 15 digits),logged in clear text when log flag set
+device,ICCID1 / ICCID2,getSimSerialNumber(),first 10 chars + 10 asterisks if >=11 digits,only when not a China Unicom test IMSI
+device,IMSI1 / IMSI2,getSubscriberId(),first 10 chars + 5 asterisks if >=11 digits,same condition
+device,MNC / NetworkType / TAC / CID / PCI,ServiceState + CellIdentity, none,
+device,ARFCN / Bands / Bandwidth,CelloIdentityNr.getNrarfcn / getBands,LTE only partially,
+device,VolteEnabled / 5GEnabled / VoNREnable,ImsManager / vendor AIDL / system props,none,
+device,DataSlot,SubscriptionManager.getActiveDataSubscriptionId,none,
+device,AccType,ConnectivityManager,none,
+device,IPv6,NetworkInterface enumeration,none,IPv4 left empty
+device,SubType,RAM/ROM/FREE from ActivityManager + StatFs,none,
+device,DeviceType,"000005",none,constant
+device,RegType,F/A/B/S/T,"none",drives which payload sections are included
+device,SpecVersion / ClientVersion,"5.0 / 3.0.1",none,
+device,Time,yyyy-MM-dd HH:mm:ss,none,
+signal,Time,device clock,none,one record per sample
+signal,IMEI,getImei(),none,key linking signal records to device
+signal,IMSI / ICCID,getSubscriberId / getSimSerialNumber,first 10 chars + asterisks,
+signal,MNC / TAC / CID / PCI / NetworkType,ServiceState,none,
+signal,RSRP / RSRQ / SINR / CQI / CQITableIndex,SignalStrength,none,
+signal,LONGITUDE / LATITUDE / ALTITUDE,Baidu LBS BD09LL high accuracy,none,precise geolocation
+signal,SPEED / BEARING,Baidu LBS,none,
+signal,CallDisconnectCause / DataFailCause,TelephonyCallback,none,
+apps,pkgName,UsageStatsManager.queryAndAggregateUsageStats,none,full installed-app usage inventory
+apps,appLabel,PackageManager.loadLabel,none,
+apps,runTime,UsageStats.getTotalTimeInForeground,none,minutes in foreground
+apps,"tx1/rx1/tx2/rx2,totalData1/totalData2,totalDataWiFi",NetworkStatsManager per-UID,none,per-app traffic volume

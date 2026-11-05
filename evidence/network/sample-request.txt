@@ -1,0 +1,16 @@
+Offline reconstruction of the SystemHelper registration request.
+NOT SENT. Generated solely to document the wire format.
+
+endpoint   : http://dm.wo.com.cn:18080/register
+public key : CN=UNICOM,OU=UNICOM,O=UNICOM,L=BJ,ST=BJ,C=CN / 1024 bit RSA
+md5(json)  : b15a52c816eeb587d6cebb370e2d6b93  (16 bytes -> AES-128 key)
+aes mode   : AES/ECB/PKCS5Padding
+body bytes : 688
+body b64   : Pku93kW27qwu0sbZ6yXpbgLJ4AWTpB1RMW/k13gSDyg9rT+FaTL7Vh2m1B4vh8rT90+hCDayTr5TYCgfuLtpZjO63sXWEl+QZ3N9li6R1uiZEoEsruIyiaqMv1pcgKMaTaBVv5ZAcjrdSCuvKl5jloE8p0LEIcmPzjBHFJLMAX2nU3r6/cCSCgTdvy0/wNqW4RqZrZwHs2up/BvTpKrqiJ3Smdd0mXwLjcIsphKw+4nyuScq+LE9svWvsvV1sSn/nQRVE5zXsE/FwUjDmDWOwiaacjdqMCiFn+IKKSLrv2/HMm/jM9XSoBRqvXot0zLBoheQBGZx7HZJMlZSoB1fSahGbDxoj5E2DcTMmBezo9mCg4WF8KdzrL3tKbkUChHffwN4MMlyVepqhjQ9RJsklu0Iv9AssyBMNFP58xGtPL7iaGGmLR5QtZ+m4chtA+WyefuNHvP21lAsAEnxKcrtelcPruCKufKRE22RCouNhME9Tp+6GNjqCERjUD4Ojox66TNiIpwLnpQuTthgfrIdyJFZbaRf2dBrYLO6jjUtxCgzYDLPq3JegXsMqQA7rQsIXCIEFxLWHENDp7exOtqd5MFBI/sj6lGb1hUGGC37tIFhSeNIwYXrvU85UyxHnCSlDcE7H9P1ITGJIxfOeKUKVONWRptyHSU0YzTf/t+kUr3hiHuTU4ZL7zVttzHa9p6bTrfQU4waxDNXVpg2CEdYr3A0ZsdnePVhrOklmpCTREiyqdt3hY77PS+4H8x/LYiFNSlz72jYuAnTy6FvKPeNfLUAwKkMTQ2oRS5djv7IozBtw6wbWwTuZgzacKcdSo0HQNd3WRRdsK7FC2tJpr8Vx1G2MlihUDxoyhAs1+bHmKS968ty5MSWcXdPcnnvM74EifjQ2VG7t4BeEa63vjCuwg==
+sign bytes : 128
+
+request URL:
+http://dm.wo.com.cn:18080/register?ver=5.0&model=M2102K1AC&manuf=Xiaomi&sign=ChRCDTzDVhYRshO8gG4bL4e9LhvNwo13h%2ByzQnfE6gCJlHVaqS4HHpWWPrGLsELZIFf1QrmOEpV0Cjyrr8ms96fcIaQS5P7XCye28HnPBtp3/JgOk9WBtsFQeRCZ98rl5LVCpA1yxuDGzM9nMpmzwd0VtAdk9wPnGLxm009gDxk%3D
+
+plaintext JSON:
+{"Manuf":"Xiaomi","Model":"M2102K1AC","HWVersion":"Unknown","SWVersion":"V13.0.5.0.SKBCNXM","OS":"Android","OSVersion":"13","IMEI1":"860000000000001","ICCID1":"8986010000000000000","IMSI1":"460010000000000","MNC1":"46001","NetworkType1":"LTE","TAC1":"12345","CID1":"123456789","PCI1":"123","VolteEnabled1":"1","5GEnabled1":"0","VoNREnable1":"0","IMEI2":"","ICCID2":"","IMSI2":"","MNC2":"","NetworkType2":"","TAC2":"","CID2":"","PCI2":"","VolteEnabled2":"","5GEnabled2":"","VoNREnable2":"","DataSlot":"1","AccType":"WiFi","IPv6":"","SubType":"","DeviceType":"000005","RegType":"R","SpecVersion":"5.0","ClientVersion":"3.0.1","Time":"2026-11-05 12:00:00","SigInfo":[],"AppInfo":[]}

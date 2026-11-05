@@ -1,0 +1,58 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" android:sharedUserId="com.mobiletools.systemhelper.uid" android:versionCode="31" android:versionName="3.0.1-20250311" android:compileSdkVersion="33" android:compileSdkVersionCodename="13" package="com.mobiletools.systemhelper" platformBuildVersionCode="33" platformBuildVersionName="13">
+  <uses-sdk android:minSdkVersion="31" android:targetSdkVersion="33"/>
+  <permission android:name="com.mobiletools.systemhelper.permission" android:protectionLevel="0x00000002"/>
+  <uses-permission android:name="android.permission.INTERNET"/>
+  <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+  <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+  <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+  <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION"/>
+  <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+  <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+  <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
+  <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
+  <uses-permission android:name="android.permission.CHANGE_WIFI_STATE"/>
+  <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
+  <uses-permission android:name="android.permission.ACCESS_LOCATION_EXTRA_COMMANDS"/>
+  <uses-permission android:name="android.permission.READ_PRECISE_PHONE_STATE"/>
+  <uses-permission android:name="android.permission.READ_PRIVILEGED_PHONE_STATE"/>
+  <uses-permission android:name="android.permission.PACKAGE_USAGE_STATS"/>
+  <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES"/>
+  <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM"/>
+  <application android:theme="@7F0C0005" android:label="@7F0B0027" android:icon="@7F0A0000" android:name="com.mobiletools.systemhelper.control.DMApplication" android:allowBackup="false" android:supportsRtl="true" android:extractNativeLibs="false" android:usesCleartextTraffic="true" android:roundIcon="@7F0A0001" android:appComponentFactory="android.support.v4.app.CoreComponentFactory">
+    <meta-data android:name="com.baidu.lbsapi.API_KEY" android:value="IGY6EFGRsixbYqk7GeZdAOD2Od3Rj7iF"/>
+    <activity android:name="com.mobiletools.systemhelper.Activity.TestActivity" android:exported="true">
+      <intent-filter>
+        <action android:name="com.mobiletools.systemhelper.activity.testactivity"/>
+        <category android:name="android.intent.category.DEFAULT"/>
+      </intent-filter>
+    </activity>
+    <receiver android:name="com.mobiletools.systemhelper.control.OnBootReceiver" android:exported="true">
+      <intent-filter android:priority="2147483647">
+        <action android:name="android.intent.action.BOOT_COMPLETED"/>
+        <action android:name="android.intent.action.QUICKBOOT_POWERON"/>
+      </intent-filter>
+    </receiver>
+    <receiver android:name="com.mobiletools.systemhelper.control.ScheduleRegisterReceiver"/>
+    <receiver android:name="com.mobiletools.systemhelper.control.AppInfoRegisterReceiver"/>
+    <receiver android:name="com.mobiletools.systemhelper.control.SignalInfoRegisterReceiver"/>
+    <receiver android:name="com.mobiletools.systemhelper.control.GetSignalInfoReceiver"/>
+    <receiver android:name="com.mobiletools.systemhelper.control.SIMStateReceiver" android:exported="true">
+      <intent-filter>
+        <action android:name="android.intent.action.SIM_STATE_CHANGED"/>
+      </intent-filter>
+    </receiver>
+    <receiver android:name="com.mobiletools.systemhelper.control.ConnectStateReceiver" android:exported="true">
+      <intent-filter>
+        <action android:name="android.net.conn.CONNECTIVITY_CHANGE"/>
+      </intent-filter>
+    </receiver>
+    <service android:name="com.baidu.location.f" android:enabled="true" android:process=":remote"/>
+    <service android:name="com.mobiletools.systemhelper.service.RegisterHelperService" android:exported="true">
+      <intent-filter>
+        <action android:name="com.mobiletools.systemhelper.service.IRegisterHelperService"/>
+      </intent-filter>
+    </service>
+    <service android:name="com.mobiletools.systemhelper.service.RegisterIntentService"/>
+    <service android:name="com.mobiletools.systemhelper.service.RegisterJobService" android:permission="android.permission.BIND_JOB_SERVICE"/>
+  </application>
+</manifest>

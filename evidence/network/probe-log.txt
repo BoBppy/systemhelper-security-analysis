@@ -1,0 +1,43 @@
+Endpoint probe log
+==================
+Date        : 2026-11-05 15:41-15:42 (GMT+8)
+Target      : http://dm.wo.com.cn:18080/register   (hardcoded in c.d.a.b.d.l)
+Source IP   : 171.221.167.146 (fixed broadband, Sichuan)
+Method      : DNS resolution, TCP connect, one GET, one OPTIONS, one HEAD.
+              No POST, no payload, no credentials, no path enumeration.
+
+1. DNS
+   dm.wo.com.cn  CNAME  63ce5fd2be92dcdf.icloudv6.com
+                 A      180.97.168.69 / 124.232.185.44 / 61.174.41.35
+   Note: icloudv6.com is a China Unicom CDN domain.
+
+2. TCP/18080
+   180.97.168.69:18080   OPEN   rtt 34 ms
+   124.232.185.44:18080  OPEN   rtt 39 ms
+   61.174.41.35:18080    OPEN   rtt 62 ms
+
+3. HTTP GET /
+   HTTP/1.1 403 Forbidden
+   WZWS-RAY: 1249-1793893290.199-waf02nbzt
+   eventID: 1249-1793893290.199-waf02nbzt reason:UrlACL
+   (WZWS = 360 WangZhan WeiShi WAF; UrlACL = path/URL access control list)
+
+4. HTTP OPTIONS /register
+   HTTP/1.1 403 Forbidden
+   WZWS-RAY: 1249-1793893345.599-waf02nbzt
+   reason:UrlACL
+
+5. HTTP HEAD /register
+   HTTP/1.1 403 Forbidden
+   WZWS-RAY: 1249-1793893345.745-waf02nbzt
+
+Interpretation
+--------------
+* The service listens on a plaintext HTTP port and is fronted by a WAF.
+* Every unauthenticated request from a residential broadband address was
+  rejected at the edge with reason "UrlACL", before reaching the application.
+* The client itself only ever issues POST /register, so the WAF rule is
+  plausibly scoped to that method/path and/or to mobile source ranges.
+  This could not be verified without a cellular device and was NOT brute-forced.
+* No evidence of a read/query interface was found in the client, and no path
+  enumeration was performed against the production server.
