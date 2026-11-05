@@ -2,6 +2,14 @@
 
 All dates are the analysis date of the artefact, not the build date of the application.
 
+## 2026-11-05 — v1.1
+
+- Added `docs/EXPOSURE.md`: what an app with no permissions can read, write and trigger; the `sharedUserId` trust boundary; why the exported service is a control plane rather than a data-read primitive.
+- **Corrected F-02.** Severity High → Medium (CVSS 7.8 → 6.8). The body is `AES-128-ECB(json, key = MD5(json))` and `sign = RSA/PKCS#1(MD5(json))` with e=65537, so redirecting the endpoint yields ciphertext and traffic metadata, not IMEI or coordinates. The impact is integrity and availability, not confidentiality.
+- **Added F-12.** `android:sharedUserId="com.mobiletools.systemhelper.uid"` places the plaintext queues (`systemhelper.db`, `signalhelper.db`) inside a UID shared with any same-signed package.
+- Corrected the timing diagram: `GetSignalInfo` samples every ~1 h (`d.v = 3600000`), not ~12 h; the 12 h figure applies to the `RegType=R` batch upload.
+- Added §14 disclosure path: which findings can support a CVE or CNVD entry.
+
 ## 2026-11-05 — v1.0 (initial publication)
 
 - Sample triage: identity, hashes, signature schemes (v1/v2/v3), ABI, DEX and native inventory.

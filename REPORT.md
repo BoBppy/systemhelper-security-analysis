@@ -69,7 +69,7 @@ This is the MIUI platform certificate also used for Xiaomi system applications. 
 
 ### 2.3 Components
 
-Full table: `evidence/components.csv`.
+Full table: `evidence/components.csv`. Reachability for an app with no permissions — what can be read, written or triggered — is analysed in [`docs/EXPOSURE.md`](docs/EXPOSURE.md).
 
 | Component | Type | Exported | Permission | Note |
 |---|---|---|---|---|
@@ -152,7 +152,7 @@ BOOT_COMPLETED ──► OnBootReceiver ──(240 s)──► OnBootReceiver (n
                                                     ├─ register dynamic receivers (SIM / connectivity)
                                                     ├─ RegType B  (first boot: F)  → full device report
                                                     └─ schedule exact alarms:
-                                                         GetSignalInfo    every  ~12 h (+ random offset)
+                                                         GetSignalInfo    every   ~1 h (+ random offset)   [sampling]
                                                          SignalInfo       every  ~12 h (+ random offset) → RegType R
                                                          Schedule         every  ~24 h (+ random offset) → RegType S
                                                          AppInfo          every  ~24 h (+ random offset) → RegType A
@@ -332,7 +332,7 @@ Severity uses a five-band scale; CVSS v3.1 vectors are indicative and assume a h
 **Impact** forged device records, database poisoning, unauthenticated load on the DM platform.
 **Fix** mutual TLS with per-device credentials provisioned at manufacture, or an HMAC over the canonical payload with a per-device key stored in the TEE/Keystore; add a server-issued nonce.
 
-### F-02 — Exported Binder service allows upload redirection and state tampering · **High** · CVSS 7.8 `AV:L/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:L`
+### F-02 — Exported Binder service allows upload redirection and state tampering · **Medium** · CVSS 6.8 `AV:L/AC:L/PR:N/UI:N/S:U/C:N/I:H/A:L`
 
 `RegisterHelperService` is `android:exported="true"` with no `android:permission`. Its AIDL surface (`service/a.java`) exposes:
 
@@ -344,7 +344,9 @@ Severity uses a five-band scale; CVSS v3.1 vectors are indicative and assume a h
 | 4 | `a(boolean)` | enables/disables verbose logging |
 | 5 | `a()` | reads the logging flag |
 
-`c/d/a/b/l.java:241-243` is the only consumer of `serverAddress`, and `l.a(Context,String)` is called from nowhere else. Combined with F-03 (any app can invoke `OnBootReceiver` explicitly to start a collection cycle), this is an **on-demand exfiltration primitive**: an installed app with no permissions can bind, point the agent at its own server, trigger a report, and receive the enveloped payload plus all metadata.
+`c/d/a/b/l.java:241-243` is the only consumer of `serverAddress`, and `l.a(Context,String)` is called from nowhere else. Combined with the exported `OnBootReceiver` / `SIMStateReceiver` (any app can send an explicit broadcast to start a collection cycle), this is an **on-demand redirection primitive**: an app holding only `INTERNET` — a normal permission granted at install — can bind, point the agent at its own server, trigger a report, and receive the enveloped payload plus traffic metadata.
+
+It is **not** a plaintext exfiltration primitive. The body is `AES-128-ECB(json, key = MD5(json))` and `sign = RSA/PKCS#1(pub.cer, MD5(json))` with a 1024-bit key and e=65537 (`c/d/a/b/j.java:27`). Neither the ciphertext nor the signature yields the digest, so the attacker obtains no IMEI, IMSI or coordinates — only timing, size and source address. The score therefore reflects integrity and availability, not confidentiality. Turning on the log switch (Tx 4) does write the full plaintext to logcat, but reading logcat requires `READ_LOGS`; see F-06 and [`docs/EXPOSURE.md`](docs/EXPOSURE.md).
 **CWE-926** Improper Export of Android Application Components · **MASVS-PLATFORM-1**
 **Fix** `android:exported="false"`; if a vendor component genuinely needs it, guard with a signature-level permission.
 
@@ -403,6 +405,15 @@ System signature + `sharedUserId` + `READ_PRIVILEGED_PHONE_STATE` + `PACKAGE_USA
 `c/c/a/a.java` still declares `com.gree.telephonymanager.IGreeTelephonyManager`; eleven vendor adapters share one package name. Code provenance is therefore unclear, and a defect fixed for one OEM build may persist in another.
 **Recommendation** establish a single upstream with per-vendor configuration rather than per-vendor forks.
 
+### F-12 — `sharedUserId` gives sibling packages the plaintext queue · **Medium** · CVSS 4.1 `AV:L/AC:H/PR:H/UI:N/S:U/C:H/I:N/A:N`
+
+`AndroidManifest.xml` declares `android:sharedUserId="com.mobiletools.systemhelper.uid"`. Any package that is signed with the same certificate **and** declares the same string runs as the same Linux UID, and can read `databases/systemhelper.db` and `databases/signalhelper.db` directly. Those tables hold the full report — IMEI, IMSI, ICCID, cell identity, BD09LL coordinates and the installed-app inventory — in plaintext, capped at 10 and 100 rows (`c/d/a/b/e.java:65`, `c/d/a/b/m.java:53`).
+
+The actor must hold the platform/carrier signing key, so this is not reachable from a downloaded app. It matters because the trust boundary for subscriber identifiers becomes "any package the carrier ships or updates": one compromised or careless sibling app with that UID exposes the queue, and that app may legitimately request `INTERNET`.
+
+**CWE-732** Incorrect Permission Assignment for Critical Resource
+**Fix** drop `sharedUserId`; if cross-app access is required, expose a signature-protected provider with explicit grants, and encrypt the queue at rest.
+
 ---
 
 ## 11. Privacy and compliance observations
@@ -450,6 +461,29 @@ This section describes observable behaviour; it is not a legal opinion.
 
 ---
 
+## 14. Disclosure path
+
+Which findings can support a CVE or CNVD entry, and which cannot.
+
+| Finding | Class | CVE | CNVD | Reasoning |
+|---|---|---|---|---|
+| F-02 exported service | CWE-926 improper export | possible | **likely accepted** | classic pre-installed-app access-control defect, reproducible from the APK alone, no user interaction |
+| F-12 `sharedUserId` | CWE-732 | unlikely | possible | hardening defect; impact needs a second signed package |
+| F-06 logcat PII | CWE-532 | unlikely | possible | real exposure, but read access is privileged |
+| F-07 exported activity | CWE-926 | possible | possible | needs a reader (accessibility or screen capture), so impact is contested |
+| F-01 forgeable `sign` | CWE-306 | no | no | no read endpoint and no user-facing impact; a protocol design issue |
+| F-05 weak envelope | CWE-327 | no | no | no direct exploit against users |
+| F-03 cleartext HTTP | CWE-319 | borderline | borderline | privacy/compliance class, rarely assigned a CVE |
+
+Practical route:
+
+1. **F-02 first.** Report to the vendor PSIRT and to the carrier's security contact with the APK hash, the AIDL transcript and a non-destructive proof of concept (bind, set the endpoint to a localhost listener, log what arrives — no data sent to a third party).
+2. **CNVD** accepts pre-installed application vulnerabilities with a reproducible PoC and a list of affected builds. F-02 is the strongest candidate; F-12 and F-06 are secondary.
+3. **A CVE needs a CNA.** The vendor PSIRT is the practical entry point; it can request an ID through its CNA arrangement or MITRE. Expect the discussion to be about *which party owns the component* (OEM vs carrier), not about whether the defect is real.
+4. **Do not submit F-01 or F-05 as vulnerabilities.** They will be closed as "by design", and a rejected submission weakens the credibility of the rest.
+
+---
+
 ## Appendix A — Indicators of compromise
 
 ```
@@ -487,6 +521,7 @@ docs/WIRE-FORMAT.md                     protocol specification
 docs/DATA-FLOWS.md                      collection-to-upload data flow
 docs/COMPONENTS.md                      attack surface of exported components
 docs/METHOD.md                          tooling and reproduction steps
+docs/EXPOSURE.md                        what another app can read, write and trigger
 ```
 
 ---

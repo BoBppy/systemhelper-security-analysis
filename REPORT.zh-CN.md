@@ -70,7 +70,7 @@
 
 ### 2.3 组件
 
-完整表格见 `evidence/components.csv`。
+完整表格见 `evidence/components.csv`。无权限应用能读什么、写什么、触发什么，见 [`docs/EXPOSURE.md`](docs/EXPOSURE.md)。
 
 | 组件 | 类型 | 导出 | 权限 | 说明 |
 |---|---|---|---|---|
@@ -153,7 +153,7 @@ BOOT_COMPLETED ──► OnBootReceiver ──(240 秒)──► OnBootReceiver�
                                                     ├─ 注册动态接收器（SIM / 网络）
                                                     ├─ RegType B（首次开机为 F）→ 完整设备上报
                                                     └─ 设置精确闹钟：
-                                                         GetSignalInfo    每 ~12 小时（+随机偏移）
+                                                         GetSignalInfo    每 ~1 小时（采样）
                                                          SignalInfo       每 ~12 小时（+随机偏移）→ RegType R
                                                          Schedule         每 ~24 小时（+随机偏移）→ RegType S
                                                          AppInfo          每 ~24 小时（+随机偏移）→ RegType A
@@ -333,7 +333,7 @@ sign  = Base64(RSA-1024-PKCS1v1.5(pub.cer, key))
 **影响** 伪造设备记录、污染设备库、对 DM 平台发起未认证负载。
 **修复** 采用双向 TLS，并在出厂时下发每设备凭据；或对规范化载荷做基于每设备密钥的 HMAC（密钥存于 TEE/Keystore）；增加服务端下发的 nonce。
 
-### F-02 — 导出 Binder 服务可改写上报地址与运行状态 · **高** · CVSS 7.8 `AV:L/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:L`
+### F-02 — 导出 Binder 服务可改写上报地址与运行状态 · **中** · CVSS 6.8 `AV:L/AC:L/PR:N/UI:N/S:U/C:N/I:H/A:L`
 
 `RegisterHelperService` 声明 `android:exported="true"` 且无 `android:permission`。其 AIDL 接口（`service/a.java`）暴露：
 
@@ -345,7 +345,9 @@ sign  = Base64(RSA-1024-PKCS1v1.5(pub.cer, key))
 | 4 | `a(boolean)` | 开/关详细日志 |
 | 5 | `a()` | 读取日志开关 |
 
-`c/d/a/b/l.java:241-243` 是 `serverAddress` 的唯一读取点，而 `l.a(Context,String)` 别无调用者。配合 F-03（任意应用可显式调用 `OnBootReceiver` 启动采集周期），构成**按需外流原语**：一个无任何权限的已安装应用即可绑定、把代理指向自己的服务器、触发上报，并收到信封报文与全部元数据。
+`c/d/a/b/l.java:241-243` 是 `serverAddress` 的唯一读取点，而 `l.a(Context,String)` 别无调用者。配合导出的 `OnBootReceiver` / `SIMStateReceiver`（任意应用可发送显式广播启动采集周期），构成**按需重定向原语**：一个仅持有 `INTERNET`（安装即授予的普通权限）的应用即可绑定、把代理指向自己的服务器、触发上报，并收到信封报文与流量元数据。
+
+但它**不是明文外流原语**。报文为 `AES-128-ECB(json, key = MD5(json))`，`sign = RSA/PKCS#1(pub.cer, MD5(json))`，密钥 1024 位、e=65537（`c/d/a/b/j.java:27`）。密文与签名都无法反推摘要，攻击者拿不到 IMEI、IMSI 或坐标——只有时序、长度与源地址。评分反映的是完整性与可用性，而非机密性。打开日志开关（事务 4）确实会把完整明文写入 logcat，但读取 logcat 需要 `READ_LOGS`；见 F-06 与 [`docs/EXPOSURE.md`](docs/EXPOSURE.md)。
 **CWE-926** · **MASVS-PLATFORM-1**
 **修复** `android:exported="false"`；若厂商组件确需外部调用，使用签名级权限保护。
 
@@ -404,6 +406,15 @@ MD5 作 KDF、AES-128-ECB、RSA-1024 PKCS#1 v1.5、无 nonce/IV、输出确定�
 `c/c/a/a.java` 仍声明 `com.gree.telephonymanager.IGreeTelephonyManager`；11 个厂商适配器共用同一包名。代码来源因此不清晰，为某一 OEM 修复的缺陷可能在另一构建中继续存在。
 **建议** 建立单一上游 + 按厂商配置，而非分厂商分支。
 
+### F-12 — `sharedUserId` 使同证书应用可直读明文队列 · **中** · CVSS 4.1 `AV:L/AC:H/PR:H/UI:N/S:U/C:H/I:N/A:N`
+
+`AndroidManifest.xml` 声明 `android:sharedUserId="com.mobiletools.systemhelper.uid"`。任何使用同一证书签名、且声明同一字符串的应用运行于同一 Linux UID，可直接读取 `databases/systemhelper.db` 与 `databases/signalhelper.db`。这两张表以明文保存完整报文——IMEI、IMSI、ICCID、小区标识、BD09LL 坐标、已安装应用清单——容量分别为 10 行与 100 行（`c/d/a/b/e.java:70`、`c/d/a/b/m.java:51`）。
+
+该攻击者必须持有平台/运营商签名密钥，因此下载安装的应用无法利用。风险在于：用户标识的信任边界变成了"运营商预装或更新的任意应用"——只要其中一个同 UID 应用被攻破或实现不当，队列即暴露，而这类应用通常合法持有 `INTERNET`。
+
+**CWE-732** 关键资源权限分配不当
+**修复** 移除 `sharedUserId`；若确需跨应用访问，改用签名级 Provider 并显式授权，同时对队列做静态加密。
+
 ---
 
 ## 11. 隐私与合规观察
@@ -451,6 +462,29 @@ MD5 作 KDF、AES-128-ECB、RSA-1024 PKCS#1 v1.5、无 nonce/IV、输出确定�
 
 ---
 
+## 14. 披露路径
+
+哪些发现足以支撑 CVE 或 CNVD，哪些不能。
+
+| 发现 | 类别 | CVE | CNVD | 判断依据 |
+|---|---|---|---|---|
+| F-02 导出服务 | CWE-926 组件导出不当 | 可能 | **较可能受理** | 典型预装应用访问控制缺陷，仅凭 APK 即可复现，无需用户交互 |
+| F-12 `sharedUserId` | CWE-732 | 可能性低 | 可能 | 加固缺陷；影响需要第二个同签名应用 |
+| F-06 logcat 敏感信息 | CWE-532 | 可能性低 | 可能 | 确有泄露，但读取需要特权 |
+| F-07 导出界面 | CWE-926 | 可能 | 可能 | 需要读取方（无障碍/录屏），影响存在争议 |
+| F-01 可伪造 `sign` | CWE-306 | 否 | 否 | 无读取接口、无用户侧影响，属协议设计问题 |
+| F-05 弱信封 | CWE-327 | 否 | 否 | 无针对用户的直接利用 |
+| F-03 明文 HTTP | CWE-319 | 边界 | 边界 | 隐私合规类，厂商极少为此发 CVE |
+
+实际路径：
+
+1. **先报 F-02。** 向厂商 PSIRT 与运营商安全联系人提交 APK 哈希、AIDL 事务记录与无害化 PoC（绑定后把地址指向本机监听，只记录到达内容，不向第三方发送数据）。
+2. **CNVD** 受理预装应用漏洞，需要可复现 PoC 与受影响构建清单。F-02 最强，F-12、F-06 次之。
+3. **CVE 需要 CNA。** 实际入口是厂商 PSIRT，由其通过 CNA 安排或 MITRE 申请编号。预期争议点是**组件归属**（OEM 还是运营商），而不是缺陷是否成立。
+4. **不要把 F-01、F-05 当漏洞提交。** 会被以"设计如此"关闭，且一次被驳回会削弱其余报告的可信度。
+
+---
+
 ## 附录 A — 指标
 
 ```
@@ -488,6 +522,7 @@ docs/WIRE-FORMAT.md                     协议规范
 docs/DATA-FLOWS.md                      从采集到上报的数据流
 docs/COMPONENTS.md                      导出组件的攻击面
 docs/METHOD.md                          工具与复现步骤
+docs/EXPOSURE.md                        其他应用可读、可写、可触发的范围
 ```
 
 ---

@@ -360,8 +360,8 @@
     },
     {
       "id": "F-02",
-      "severity": "high",
-      "title": "exported Binder service allows upload redirection and state tampering",
+      "severity": "medium",
+      "title": "exported Binder service allows endpoint redirection and state tampering (payload stays encrypted)",
       "cwe": "CWE-926"
     },
     {
@@ -417,6 +417,12 @@
       "severity": "info",
       "title": "cross-OEM code reuse and residual Gree AIDL descriptor",
       "cwe": null
+    },
+    {
+      "id": "F-12",
+      "severity": "medium",
+      "title": "sharedUserId places the plaintext telemetry queue (IMEI, IMSI, ICCID, coordinates) in a UID shared with any same-signed sibling package",
+      "cwe": "CWE-732"
     }
   ]
 }

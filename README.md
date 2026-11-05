@@ -78,7 +78,7 @@ Absence of an analytics SDK matters for the privacy assessment: the only third-p
 | ID | Severity | Finding |
 |---|---|---|
 | F-01 | High | No client authentication. `sign` is RSA encryption of `MD5(payload)` under a public key shipped in the APK — any holder of the APK can forge a submission. |
-| F-02 | High | Exported, permission-less Binder service: any installed app can redirect the upload destination, change intervals, enable identifier logging, or wipe the queue. |
+| F-02 | Medium | Exported, permission-less Binder service: any installed app can redirect the upload destination, change intervals, enable identifier logging, or wipe the queue. The payload stays encrypted, so this is redirection/tampering, not disclosure. |
 | F-03 | High | Plaintext HTTP (`dm.wo.com.cn:18080`) for PII; `usesCleartextTraffic="true"` app-wide; no pinning. |
 | F-04 | High | Consent is inferred from `device_provisioned`, not obtained. The carrier's own improvement-plan flag is honoured only on vivo. |
 | F-05 | Medium | MD5-as-KDF + AES-128-ECB + RSA-1024 + no nonce; deterministic ciphertext and deterministic `sign`. |
@@ -88,6 +88,7 @@ Absence of an analytics SDK matters for the privacy assessment: the only third-p
 | F-09 | Medium | System signature + `sharedUserId` + privileged phone state + usage stats, with no launcher icon and no user-visible surface. |
 | F-10 | Low | HTTP 416 treated as delivery success. |
 | F-11 | Info | Cross-OEM code reuse; residual Gree AIDL descriptor. |
+| F-12 | Medium | `sharedUserId` puts the plaintext telemetry queue (IMEI, IMSI, ICCID, coordinates) inside a shared UID reachable by any same-signed sibling package. |
 
 Direct answers to the four questions that motivated the assessment:
 
